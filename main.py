@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 
 from auth.auth import authenticate_user, create_access_token, get_current_user, oauth2_scheme
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -13,10 +14,10 @@ from auth.models import Token, User
 app = FastAPI()
 
 
-@app.post("/token")
+@app.post("/login_or_token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-) -> Token:
+):
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -28,8 +29,15 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+    response = JSONResponse(status_code=200, content={"message": "Logged in successfully"})
+    response.set_cookie(key="access_token", value=access_token, secure=True, httponly=True)
+    return response
 
+@app.post("/logout")
+async def logout():
+    response = JSONResponse(status_code=200, content={"message": "Logged out successfully"})
+    response.delete_cookie(key="access_token")
+    return response
 
 @app.on_event("startup")
 async def startup():
