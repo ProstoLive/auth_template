@@ -11,7 +11,7 @@ from auth.db import get_user
 from config import SECRET_KEY, ALGORITHM
 from auth.models import TokenData
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 #This context is used to hash and verify passwords.

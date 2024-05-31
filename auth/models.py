@@ -14,9 +14,9 @@ class TokenData(BaseModel):
 
 class User(BaseModel):
     username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+    email: str
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 #Model of how user will be in db. Inherits from User
